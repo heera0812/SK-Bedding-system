@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Issued - Shantikunj{% endblock %}
+{% block content %}
+<section class="panel-card success-card">
+  <div class="section-heading">
+    <h2>Bedding Issued</h2>
+  </div>
+  <div class="issue-id">{{ visitor.issue_id }}</div>
+  <div class="row g-3 mt-2">
+    <div class="col-md-4"><span class="detail-label">Name</span><strong>{{ visitor.full_name }}</strong></div>
+    <div class="col-md-4"><span class="detail-label">Mobile</span><strong>{{ visitor.mobile }}</strong></div>
+    <div class="col-md-4"><span class="detail-label">Deposit</span><strong>₹{{ visitor.deposit_amount }}</strong></div>
+    <div class="col-md-4"><span class="detail-label">Gadda</span><strong>{{ visitor.gadda_qty }}</strong></div>
+    <div class="col-md-4"><span class="detail-label">Rajai</span><strong>{{ visitor.rajai_qty }}</strong></div>
+    <div class="col-md-4"><span class="detail-label">Expected Stay</span><strong>{{ visitor.stay_days }} day(s)</strong></div>
+  </div>
+  <p class="note-line mt-3">Visitor should show the SMS or Issue ID while returning bedding.</p>
+  <div class="d-flex flex-wrap gap-2 mt-3">
+    <a class="btn btn-primary" href="{{ url_for('bedding.issue') }}">Issue Another</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('bedding.return_search', q=visitor.issue_id) }}">Open Return</a>
+  </div>
+</section>
+{% endblock %}

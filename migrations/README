@@ -1,0 +1,8 @@
+Flask-Migrate/Alembic migration directory.
+
+Use:
+  flask db upgrade
+
+To create future migrations after model changes:
+  flask db migrate -m "describe change"
+  flask db upgrade

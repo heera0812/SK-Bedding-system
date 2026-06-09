@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}Issue Bedding - Shantikunj{% endblock %}
+{% block content %}
+<form method="post" class="row g-3">
+  <section class="col-lg-8">
+    <div class="panel-card">
+      <div class="section-heading">
+        <h2>Visitor Details</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label class="form-label" for="full_name">Full Name</label>
+          <input class="form-control" id="full_name" name="full_name" required maxlength="120" autocomplete="name">
+        </div>
+        <div class="col-md-6">
+          <label class="form-label" for="mobile">Mobile Number</label>
+          <input class="form-control" id="mobile" name="mobile" required maxlength="10" pattern="[6-9][0-9]{9}" autocomplete="tel">
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="stay_days">Expected Stay Days</label>
+          <input class="form-control" id="stay_days" name="stay_days" type="number" min="1" max="365" value="1" required>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-card mt-3">
+      <div class="section-heading">
+        <h2>Bedding Items</h2>
+      </div>
+      <div class="row g-3">
+        <div class="col-md-4">
+          <label class="form-label" for="gadda_qty">Gadda Quantity</label>
+          <input class="form-control js-deposit-input" id="gadda_qty" name="gadda_qty" type="number" min="0" max="{{ inventory.available_gadda }}" value="1" required>
+          <div class="form-text">{{ inventory.available_gadda }} available</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="rajai_qty">Rajai Quantity</label>
+          <input class="form-control js-deposit-input" id="rajai_qty" name="rajai_qty" type="number" min="0" max="{{ inventory.available_rajai }}" value="1" required>
+          <div class="form-text">{{ inventory.available_rajai }} available</div>
+        </div>
+        <div class="col-md-4">
+          <label class="form-label" for="deposit_amount">Security Deposit</label>
+          <div class="input-group">
+            <span class="input-group-text">₹</span>
+            <input class="form-control" id="deposit_amount" name="deposit_amount" type="number" min="0" value="{{ suggested_deposit }}" required data-deposit-per-item="{{ inventory.deposit_per_item }}">
+          </div>
+          <div class="form-text">Default ₹{{ inventory.deposit_per_item }} per item</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <aside class="col-lg-4">
+    <div class="panel-card sticky-summary">
+      <div class="section-heading">
+        <h2>Counter Summary</h2>
+      </div>
+      <div class="fee-row"><span>Available Gadda</span><strong>{{ inventory.available_gadda }}</strong></div>
+      <div class="fee-row"><span>Available Rajai</span><strong>{{ inventory.available_rajai }}</strong></div>
+      <div class="fee-row"><span>Security to Collect</span><strong id="deposit-preview">₹{{ suggested_deposit }}</strong></div>
+      <button class="btn btn-primary w-100 mt-3" type="submit">Issue Bedding</button>
+      <a class="btn btn-outline-secondary w-100 mt-2" href="{{ url_for('main.dashboard') }}">Cancel</a>
+    </div>
+  </aside>
+</form>
+{% endblock %}

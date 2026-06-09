@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}Inventory - Shantikunj{% endblock %}
+{% block content %}
+<section class="metric-grid">
+  <div class="metric-card"><span>Total Gadda</span><strong>{{ inventory.total_gadda }}</strong></div>
+  <div class="metric-card"><span>Available Gadda</span><strong>{{ inventory.available_gadda }}</strong></div>
+  <div class="metric-card"><span>Total Rajai</span><strong>{{ inventory.total_rajai }}</strong></div>
+  <div class="metric-card"><span>Available Rajai</span><strong>{{ inventory.available_rajai }}</strong></div>
+</section>
+
+<section class="panel-card">
+  <div class="section-heading">
+    <h2>Adjust Total Stock</h2>
+  </div>
+  <form method="post" class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label" for="total_gadda">Total Gadda</label>
+      <input class="form-control" id="total_gadda" name="total_gadda" type="number" min="{{ issued_gadda }}" value="{{ inventory.total_gadda }}" required>
+      <div class="form-text">{{ issued_gadda }} currently issued</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="total_rajai">Total Rajai</label>
+      <input class="form-control" id="total_rajai" name="total_rajai" type="number" min="{{ issued_rajai }}" value="{{ inventory.total_rajai }}" required>
+      <div class="form-text">{{ issued_rajai }} currently issued</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="deposit_per_item">Deposit Per Item</label>
+      <div class="input-group">
+        <span class="input-group-text">₹</span>
+        <input class="form-control" id="deposit_per_item" name="deposit_per_item" type="number" min="0" value="{{ inventory.deposit_per_item }}" required>
+      </div>
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary" type="submit">Save Inventory</button>
+    </div>
+  </form>
+</section>
+{% endblock %}

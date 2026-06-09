@@ -1,0 +1,447 @@
+﻿<link rel="stylesheet" href="styles.css">
+
+<h2 class="sr-only">Shantikunj Bedding & Accommodation Management System</h2>
+<div class="app">
+  <div class="header">
+    <img class="brand-logo" src="assets/awgp-logo-english.png" alt="All World Gayatri Pariwar">
+    <div class="header-icon"></div>
+    <div>
+      <h1>Shantikunj Accommodation Register</h1>
+      <p>Haridwar    - Gadda, Rajai </p>
+    </div>
+    <div class="live-clock" id="live-clock"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('checkin')"><i class="ti ti-user-plus" aria-hidden="true"></i> Check-in</button>
+    <button class="tab" onclick="switchTab('register')"><i class="ti ti-list" aria-hidden="true"></i> Register</button>
+    <button class="tab" onclick="switchTab('inventory')"><i class="ti ti-package" aria-hidden="true"></i> Inventory</button>
+    <button class="tab" onclick="switchTab('checkout')"><i class="ti ti-user-check" aria-hidden="true"></i> Check-out</button>
+  </div>
+
+  <!-- CHECK-IN PANEL -->
+  <div class="panel active" id="panel-checkin">
+    <div class="metrics" id="dash-metrics"></div>
+    <div id="checkin-alert" class="alert"></div>
+    
+    <p class="section-title">Visitor details</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Full name</label>
+        <input type="text" id="v-name" placeholder="Visitor ka naam">
+      </div>
+      <div class="form-group">
+        <label>Phone number</label>
+        <input type="text" id="v-phone" placeholder="10-digit number" maxlength="10">
+      </div>
+      <div class="form-group">
+        <label>Expected stay (days)</label>
+        <input type="number" id="v-days" min="1" max="30" value="1">
+      </div>
+    </div>
+
+    <hr class="divider">
+    <p class="section-title">Bedding items</p>
+    <div class="qty-row" style="margin-bottom:1rem;">
+      <span style="font-size:13px; color:var(--color-text-secondary); min-width:80px;"><i class="ti ti-bed" aria-hidden="true"></i> Gadda</span>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('gadda',-1)">-</button>
+        <span class="qty-num" id="qty-gadda">1</span>
+        <button class="qty-btn" onclick="changeQty('gadda',1)">+</button>
+      </div>
+      <span style="font-size:12px; color:var(--color-text-tertiary);" id="gadda-avail"></span>
+    </div>
+    <div class="qty-row" style="margin-bottom:1.25rem;">
+      <span style="font-size:13px; color:var(--color-text-secondary); min-width:80px;"><i class="ti ti-blanket" aria-hidden="true"></i> Rajai</span>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('rajai',-1)">-</button>
+        <span class="qty-num" id="qty-rajai">1</span>
+        <button class="qty-btn" onclick="changeQty('rajai',1)">+</button>
+      </div>
+      <span style="font-size:12px; color:var(--color-text-tertiary);" id="rajai-avail"></span>
+    </div>
+
+    <hr class="divider">
+    <p class="section-title">Fee summary</p>
+    <div id="fee-preview">
+      <div class="fee-row"><span class="fee-label">Security deposit</span><span class="fee-value" id="fee-security">-</span></div>
+      <div class="fee-row"><span class="fee-label">Estimated total (<span id="fee-days">1</span> day)</span><span class="fee-value" id="fee-est">-</span></div>
+      <div class="fee-total"><span class="fee-label">Security to collect now</span><span class="fee-value" id="fee-now">Rs.0</span></div>
+    </div>
+
+    <div class="action-row">
+      <button class="btn-primary" onclick="doCheckin()"><i class="ti ti-user-plus" aria-hidden="true"></i> Issue Bedding & Generate Card</button>
+      <button class="btn-secondary" onclick="clearForm()"><i class="ti ti-refresh" aria-hidden="true"></i> Clear</button>
+    </div>
+
+    <div class="token-card" id="token-card">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+        <span style="font-size:11px; font-weight:500; color:var(--saffron-dark); text-transform:uppercase; letter-spacing:0.06em;">AWGP Shantikunj - Visitor Card</span>
+        <span style="font-size:11px; color:var(--saffron-dark);" id="tc-date"></span>
+      </div>
+      <div class="token-id" id="tc-id"></div>
+      <div class="token-grid">
+        <div><div class="token-field">Name</div><div class="token-val" id="tc-name"></div></div>
+        <div><div class="token-field">Gadda</div><div class="token-val" id="tc-gadda"></div></div>
+        <div><div class="token-field">Rajai</div><div class="token-val" id="tc-rajai"></div></div>
+        <div><div class="token-field">Security paid</div><div class="token-val" id="tc-sec"></div></div>
+        <div><div class="token-field">Valid until</div><div class="token-val" id="tc-valid"></div></div>
+      </div>
+      <div style="margin-top:10px; font-size:11px; color:var(--saffron-dark); border-top:1px dashed var(--saffron); padding-top:8px;">
+        Note: Kripya yeh card safe rakhein - check-out par wapas karein
+      </div>
+    </div>
+  </div>
+
+  <!-- REGISTER PANEL -->
+  <div class="panel" id="panel-register">
+    <div class="search-row">
+      <input type="text" id="reg-search" placeholder="Search by name, card ID, phone..." oninput="renderRegister()">
+      <select id="reg-filter" onchange="renderRegister()" style="width:140px;">
+        <option value="all">All visitors</option>
+        <option value="active">Checked in</option>
+        <option value="out">Checked out</option>
+      </select>
+    </div>
+    <div id="register-body"></div>
+  </div>
+
+  <!-- INVENTORY PANEL -->
+  <div class="panel" id="panel-inventory">
+    <div class="inv-grid" id="inv-display"></div>
+    <hr class="divider">
+    <p class="section-title">Adjust total stock</p>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Total Gadda in stock</label>
+        <input type="number" id="stock-gadda" min="0" value="50">
+      </div>
+      <div class="form-group">
+        <label>Total Rajai in stock</label>
+        <input type="number" id="stock-rajai" min="0" value="50">
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Security deposit per item (Rs.)</label>
+        <input type="number" id="cfg-security" value="50" min="0">
+      </div>
+      <div class="form-group">
+        <label>Rent per day per person (Rs.)</label>
+        <input type="number" id="cfg-rent" value="20" min="0">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="saveConfig()" style="margin-top:4px;"><i class="ti ti-device-floppy" aria-hidden="true"></i> Save configuration</button>
+    <div id="cfg-saved" class="alert" style="margin-top:10px;"></div>
+  </div>
+
+  <!-- CHECK-OUT PANEL -->
+  <div class="panel" id="panel-checkout">
+    <div id="checkout-alert" class="alert"></div>
+    <p class="section-title">Find visitor for check-out</p>
+    <div class="search-row">
+      <input type="text" id="co-search" placeholder="Enter Card ID or visitor name..." oninput="renderCheckoutList()">
+    </div>
+    <div id="checkout-list"></div>
+  </div>
+
+</div>
+
+<div class="modal-overlay" id="co-modal">
+  <div class="modal">
+    <h3>Confirm Check-out</h3>
+    <div id="co-modal-body"></div>
+    <div class="modal-actions">
+      <button class="btn-primary" id="co-confirm-btn"><i class="ti ti-check" aria-hidden="true"></i> Confirm & Return</button>
+      <button class="btn-secondary" onclick="document.getElementById('co-modal').classList.remove('open')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = {
+  visitors: [],
+  totalGadda: 50,
+  totalRajai: 50,
+  securityPerItem: 50,
+  rentPerDay: 20,
+  counter: 1000
+};
+
+const QTY = { gadda: 1, rajai: 1 };
+
+function today() {
+  return new Date().toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+}
+function now() {
+  return new Date().toLocaleTimeString('en-IN', {hour:'2-digit',minute:'2-digit'});
+}
+function addDays(d, n) {
+  const dt = new Date(d);
+  dt.setDate(dt.getDate() + n);
+  return dt.toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'});
+}
+
+function issuedGadda() { return state.visitors.filter(v=>v.status==='active').reduce((a,v)=>a+v.gadda,0); }
+function issuedRajai() { return state.visitors.filter(v=>v.status==='active').reduce((a,v)=>a+v.rajai,0); }
+
+function renderMetrics() {
+  const active = state.visitors.filter(v=>v.status==='active').length;
+  const totalFees = state.visitors.reduce((a,v)=>a+v.security,0);
+  const iGadda = issuedGadda();
+  const iRajai = issuedRajai();
+  document.getElementById('dash-metrics').innerHTML = `
+    <div class="metric">
+      <div class="metric-label"><i class="ti ti-users" aria-hidden="true"></i> Checked in</div>
+      <div class="metric-value">${active}</div>
+      <div class="metric-sub">${state.visitors.length} total today</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label"><i class="ti ti-bed" aria-hidden="true"></i> Gadda out</div>
+      <div class="metric-value">${iGadda}</div>
+      <div class="metric-sub">${state.totalGadda - iGadda} available</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label"><i class="ti ti-cloud" aria-hidden="true"></i> Rajai out</div>
+      <div class="metric-value">${iRajai}</div>
+      <div class="metric-sub">${state.totalRajai - iRajai} available</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label"><i class="ti ti-coin-rupee" aria-hidden="true"></i> Deposits held</div>
+      <div class="metric-value">Rs.${state.visitors.filter(v=>v.status==='active').reduce((a,v)=>a+v.security,0)}</div>
+      <div class="metric-sub">Rs.${totalFees} total collected</div>
+    </div>
+  `;
+  document.getElementById('gadda-avail').textContent = `${state.totalGadda - issuedGadda()} available`;
+  document.getElementById('rajai-avail').textContent = `${state.totalRajai - issuedRajai()} available`;
+}
+
+function updateFees() {
+  const days = parseInt(document.getElementById('v-days').value) || 1;
+  const g = QTY.gadda; const r = QTY.rajai;
+  const sec = (g + r) * state.securityPerItem;
+  document.getElementById('fee-days').textContent = days;
+  document.getElementById('fee-security').textContent = `Rs.${sec}`;
+  document.getElementById('fee-est').textContent = `Rs.${sec}`;
+  document.getElementById('fee-now').textContent = `Rs.${sec}`;
+}
+
+function changeQty(type, delta) {
+  const avail = type==='gadda' ? state.totalGadda - issuedGadda() : state.totalRajai - issuedRajai();
+  QTY[type] = Math.max(0, Math.min(avail, QTY[type] + delta));
+  document.getElementById('qty-'+type).textContent = QTY[type];
+  updateFees();
+}
+
+function genId() {
+  return 'SK-' + (++state.counter);
+}
+
+function showAlert(id, msg, type) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.className = 'alert ' + type;
+  setTimeout(()=>{ el.className='alert'; }, 3500);
+}
+
+function doCheckin() {
+  const name = document.getElementById('v-name').value.trim();
+  const phone = document.getElementById('v-phone').value.trim();
+  const days = parseInt(document.getElementById('v-days').value) || 1;
+  if (!name || !phone) { showAlert('checkin-alert','Kripya naam aur phone number bharein','warn'); return; }
+  if (QTY.gadda === 0 && QTY.rajai === 0) { showAlert('checkin-alert','Koi item select nahi kiya','warn'); return; }
+  if (QTY.gadda > state.totalGadda - issuedGadda()) { showAlert('checkin-alert','Itne gadde available nahi hain','warn'); return; }
+  if (QTY.rajai > state.totalRajai - issuedRajai()) { showAlert('checkin-alert','Itne rajai available nahi hain','warn'); return; }
+
+  const id = genId();
+  const checkInDate = new Date();
+  const security = (QTY.gadda + QTY.rajai) * state.securityPerItem;
+  const visitor = { id, name, phone, gadda: QTY.gadda, rajai: QTY.rajai, days, security, rent: state.rentPerDay, checkInDate: checkInDate.toISOString(), status: 'active' };
+  state.visitors.unshift(visitor);
+
+  document.getElementById('tc-id').textContent = id;
+  document.getElementById('tc-name').textContent = name;
+  document.getElementById('tc-gadda').textContent = QTY.gadda;
+  document.getElementById('tc-rajai').textContent = QTY.rajai;
+  document.getElementById('tc-sec').textContent = 'Rs.' + security;
+  document.getElementById('tc-date').textContent = today() + ' ' + now();
+  document.getElementById('tc-valid').textContent = addDays(checkInDate, days);
+  document.getElementById('token-card').classList.add('visible');
+  showAlert('checkin-alert', `Done: ${name} check-in successful! Card: ${id}`, 'success');
+  renderMetrics();
+}
+
+function clearForm() {
+  ['v-name','v-phone','v-days'].forEach(id=>document.getElementById(id).value = id==='v-days'?'1':'');
+  QTY.gadda=1; QTY.rajai=1;
+  document.getElementById('qty-gadda').textContent='1';
+  document.getElementById('qty-rajai').textContent='1';
+  document.getElementById('token-card').classList.remove('visible');
+  updateFees();
+}
+
+function renderRegister() {
+  const q = document.getElementById('reg-search').value.toLowerCase();
+  const f = document.getElementById('reg-filter').value;
+  let data = state.visitors.filter(v => {
+    if (f==='active' && v.status!=='active') return false;
+    if (f==='out' && v.status==='out') return false;
+    if (q && !v.name.toLowerCase().includes(q) && !v.id.toLowerCase().includes(q) && !v.phone.includes(q)) return false;
+    return true;
+  });
+  if (data.length===0) {
+    document.getElementById('register-body').innerHTML = '<div class="empty-state"><i class="ti ti-database-off" style="font-size:28px; display:block; margin-bottom:8px;" aria-hidden="true"></i>No records found</div>';
+    return;
+  }
+  let html = `<table class="register-table"><thead><tr>
+    <th>Card ID</th><th>Name</th><th>Bedding</th><th>Check-in</th><th>Status</th><th>Fees</th>
+  </tr></thead><tbody>`;
+  data.forEach(v => {
+    const dt = new Date(v.checkInDate).toLocaleDateString('en-IN',{day:'2-digit',month:'short'}) + ' ' + new Date(v.checkInDate).toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+    const overdue = v.status==='active' && ((Date.now()-new Date(v.checkInDate).getTime()) > v.days*86400000);
+    html += `<tr class="${overdue?'overdue-row':''}">
+      <td style="font-family:var(--font-mono); font-size:12px; font-weight:500;">${v.id}</td>
+      <td><div style="font-weight:500;">${v.name}</div><div style="font-size:11px; color:var(--color-text-tertiary);">${v.phone}</div></td>
+      <td><span class="item-pill">Gadda ${v.gadda}</span><span class="item-pill">Rajai ${v.rajai}</span></td>
+      <td style="font-size:12px;">${dt}</td>
+      <td><span class="badge badge-${v.status==='active'?'active':'out'}">${v.status==='active'?'Checked in':'Checked out'}</span>${overdue?'<br><span class="badge badge-warn" style="margin-top:3px;">Overdue</span>':''}</td>
+      <td style="font-size:12px;">Dep: Rs.${v.security}<br>Rent: Rs.${v.rent}/d</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  document.getElementById('register-body').innerHTML = html;
+}
+
+function renderInventory() {
+  const iG = issuedGadda(); const iR = issuedRajai();
+  const pG = state.totalGadda > 0 ? Math.round((iG/state.totalGadda)*100) : 0;
+  const pR = state.totalRajai > 0 ? Math.round((iR/state.totalRajai)*100) : 0;
+  document.getElementById('inv-display').innerHTML = `
+    <div class="inv-card">
+      <div class="inv-header">
+        <div class="inv-name"><span class="inv-icon"><i class="ti ti-bed" aria-hidden="true"></i></span> Gadda (Mattress)</div>
+        <span style="font-size:13px; font-weight:500;">${iG}/${state.totalGadda}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pG}%; background:${pG>80?'#E24B4A':pG>50?'#EF9F27':'#1D9E75'};"></div></div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+        <span>${iG} issued</span><span>${state.totalGadda-iG} available</span>
+      </div>
+    </div>
+    <div class="inv-card">
+      <div class="inv-header">
+        <div class="inv-name"><span class="inv-icon"><i class="ti ti-blanket" aria-hidden="true"></i></span> Rajai (Quilt)</div>
+        <span style="font-size:13px; font-weight:500;">${iR}/${state.totalRajai}</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" style="width:${pR}%; background:${pR>80?'#E24B4A':pR>50?'#EF9F27':'#1D9E75'};"></div></div>
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--color-text-secondary);">
+        <span>${iR} issued</span><span>${state.totalRajai-iR} available</span>
+      </div>
+    </div>
+  `;
+  document.getElementById('stock-gadda').value = state.totalGadda;
+  document.getElementById('stock-rajai').value = state.totalRajai;
+  document.getElementById('cfg-security').value = state.securityPerItem;
+  document.getElementById('cfg-rent').value = state.rentPerDay;
+}
+
+function saveConfig() {
+  state.totalGadda = parseInt(document.getElementById('stock-gadda').value) || 50;
+  state.totalRajai = parseInt(document.getElementById('stock-rajai').value) || 50;
+  state.securityPerItem = parseInt(document.getElementById('cfg-security').value) || 50;
+  state.rentPerDay = parseInt(document.getElementById('cfg-rent').value) || 20;
+  const el = document.getElementById('cfg-saved');
+  el.textContent = 'Done: Configuration saved!';
+  el.className = 'alert success';
+  setTimeout(()=>el.className='alert', 2500);
+  renderInventory(); renderMetrics(); updateFees();
+}
+
+function renderCheckoutList() {
+  const q = document.getElementById('co-search').value.toLowerCase().trim();
+  const active = state.visitors.filter(v => v.status==='active' && (
+    !q || v.name.toLowerCase().includes(q) || v.id.toLowerCase().includes(q)
+  ));
+  if (!q) {
+    document.getElementById('checkout-list').innerHTML = '<div class="empty-state" style="padding:1rem; text-align:center; font-size:13px; color:var(--color-text-tertiary);">Card ID ya naam likhkar visitor dhundein</div>';
+    return;
+  }
+  if (active.length===0) {
+    document.getElementById('checkout-list').innerHTML = '<div class="empty-state"><i class="ti ti-user-off" style="font-size:24px; display:block; margin-bottom:6px;" aria-hidden="true"></i>No active visitor found</div>';
+    return;
+  }
+  let html = '';
+  active.forEach(v => {
+    const dt = new Date(v.checkInDate);
+    const daysStayed = Math.max(1, Math.ceil((Date.now()-dt.getTime())/86400000));
+    const rentDue = daysStayed * v.rent;
+    const refund = Math.max(0, v.security - rentDue);
+    html += `<div class="inv-card" style="margin-bottom:10px;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div style="font-weight:500; font-size:14px;">${v.name} <span style="font-size:12px; font-family:var(--font-mono); color:var(--color-text-secondary);">${v.id}</span></div>
+          <div style="font-size:12px; color:var(--color-text-secondary); margin-top:2px;">Checked in: ${dt.toLocaleDateString('en-IN')}</div>
+        </div>
+        <button class="btn-primary" onclick="openCheckout('${v.id}')"><i class="ti ti-arrow-bar-right" aria-hidden="true"></i> Check out</button>
+      </div>
+      <hr class="divider" style="margin:10px 0 8px;">
+      <div style="display:flex; gap:16px; font-size:12px;">
+        <span>Gadda ${v.gadda} - Rajai ${v.rajai}</span>
+        <span>Stayed: ${daysStayed} day${daysStayed>1?'s':''}</span>
+        <span>Rent due: Rs.${rentDue}</span>
+        <span style="color:${refund>0?'var(--teal-dark)':'#A32D2D'}; font-weight:500;">Refund: Rs.${refund}</span>
+      </div>
+    </div>`;
+  });
+  document.getElementById('checkout-list').innerHTML = html;
+}
+
+let coVisitorId = null;
+function openCheckout(id) {
+  const v = state.visitors.find(x=>x.id===id);
+  if (!v) return;
+  coVisitorId = id;
+  const daysStayed = Math.max(1, Math.ceil((Date.now()-new Date(v.checkInDate).getTime())/86400000));
+  const rentDue = daysStayed * v.rent;
+  const refund = Math.max(0, v.security - rentDue);
+  document.getElementById('co-modal-body').innerHTML = `
+    <div class="fee-row"><span class="fee-label">Visitor</span><span class="fee-value">${v.name}</span></div>
+    <div class="fee-row"><span class="fee-label">Items returning</span><span class="fee-value">Gadda ${v.gadda} - Rajai ${v.rajai}</span></div>
+    <div class="fee-row"><span class="fee-label">Days stayed</span><span class="fee-value">${daysStayed}</span></div>
+    <div class="fee-row"><span class="fee-label">Security paid</span><span class="fee-value">Rs.${v.security}</span></div>
+    <div class="fee-row"><span class="fee-label">Rent (Rs.${v.rent} x ${daysStayed}d)</span><span class="fee-value">Rs.${rentDue}</span></div>
+    <div class="fee-total" style="margin-top:8px;"><span class="fee-label" style="color:${refund>0?'var(--teal-dark)':'#A32D2D'}; font-weight:500;">${refund>0?'Refund to visitor':'Balance due'}</span><span class="fee-value" style="color:${refund>0?'var(--teal-dark)':'#A32D2D'};">Rs.${Math.abs(refund)}</span></div>
+  `;
+  document.getElementById('co-modal').classList.add('open');
+  document.getElementById('co-confirm-btn').onclick = () => confirmCheckout(id);
+}
+
+function confirmCheckout(id) {
+  const v = state.visitors.find(x=>x.id===id);
+  if (v) { v.status = 'out'; v.checkOutDate = new Date().toISOString(); }
+  document.getElementById('co-modal').classList.remove('open');
+  showAlert('checkout-alert', `Done: ${v.name} checked out. Items returned. Card ${id} closed.`, 'success');
+  renderCheckoutList(); renderMetrics(); renderInventory(); renderRegister();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const tabs = ['checkin','register','inventory','checkout'];
+  document.querySelectorAll('.tab')[tabs.indexOf(tab)].classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  if (tab==='register') renderRegister();
+  if (tab==='inventory') renderInventory();
+  if (tab==='checkout') renderCheckoutList();
+}
+
+document.getElementById('v-days').addEventListener('input', updateFees);
+setInterval(()=>{
+  const el = document.getElementById('live-clock');
+  if (el) el.textContent = new Date().toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}, 1000);
+
+renderMetrics(); updateFees();
+</script>
+
+
+

@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Reports - Shantikunj{% endblock %}
+{% block content %}
+<section class="metric-grid">
+  <div class="metric-card"><span>Total Records</span><strong>{{ total }}</strong></div>
+  <div class="metric-card"><span>Active Issues</span><strong>{{ active }}</strong></div>
+  <div class="metric-card"><span>Returned Issues</span><strong>{{ returned }}</strong></div>
+</section>
+
+<section class="panel-card">
+  <div class="section-heading">
+    <h2>Export Reports</h2>
+  </div>
+  <div class="d-flex flex-wrap gap-2">
+    <a class="btn btn-primary" href="{{ url_for('reports.export_excel') }}">Export Excel</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('reports.export_pdf') }}">Export PDF Daily Summary</a>
+  </div>
+</section>
+{% endblock %}

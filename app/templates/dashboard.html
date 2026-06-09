@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - Shantikunj Bedding Counter{% endblock %}
+{% block content %}
+<section class="metric-grid">
+  <div class="metric-card">
+    <span>Active Visitors</span>
+    <strong>{{ metrics.active_visitors }}</strong>
+  </div>
+  <div class="metric-card">
+    <span>Gadda Issued</span>
+    <strong>{{ metrics.gadda_issued }}</strong>
+  </div>
+  <div class="metric-card">
+    <span>Rajai Issued</span>
+    <strong>{{ metrics.rajai_issued }}</strong>
+  </div>
+  <div class="metric-card">
+    <span>Available Gadda</span>
+    <strong>{{ metrics.available_gadda }}</strong>
+  </div>
+  <div class="metric-card">
+    <span>Available Rajai</span>
+    <strong>{{ metrics.available_rajai }}</strong>
+  </div>
+  <div class="metric-card metric-card-accent">
+    <span>Deposits Held</span>
+    <strong>₹{{ metrics.deposits_held }}</strong>
+  </div>
+</section>
+
+<section class="panel-card">
+  <div class="section-heading">
+    <h2>Recent Bedding Issues</h2>
+    <a class="btn btn-sm btn-primary" href="{{ url_for('bedding.issue') }}">Issue Bedding</a>
+  </div>
+  {% if recent_visitors %}
+    <div class="table-responsive">
+      <table class="table app-table align-middle">
+        <thead>
+          <tr>
+            <th>Issue ID</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Bedding</th>
+            <th>Deposit</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for visitor in recent_visitors %}
+            <tr>
+              <td class="mono">{{ visitor.issue_id }}</td>
+              <td>{{ visitor.full_name }}</td>
+              <td>{{ visitor.mobile }}</td>
+              <td><span class="item-pill">Gadda {{ visitor.gadda_qty }}</span><span class="item-pill">Rajai {{ visitor.rajai_qty }}</span></td>
+              <td>₹{{ visitor.deposit_amount }}</td>
+              <td><span class="status-badge {{ visitor.status }}">{{ visitor.status|title }}</span></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div class="empty-state">No bedding records yet.</div>
+  {% endif %}
+</section>
+{% endblock %}
