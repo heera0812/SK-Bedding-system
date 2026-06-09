@@ -1,0 +1,19 @@
+# Environment
+.env
+
+# Virtual environment
+.venv/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Database
+instance/
+*.db
+
+# Excel data files
+*.xlsx
+
+# VS Code settings
+.vscode/
